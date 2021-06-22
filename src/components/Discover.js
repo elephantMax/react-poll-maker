@@ -1,6 +1,20 @@
 import { Link } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { setPolls } from '../store/slices/pollSlice'
+import { fetchPolls } from '../store/slices/pollSlice'
+import { useEffect } from 'react'
+import Poll from './Poll'
 
 const Discover = () => {
+    const polls = useSelector((state) => state.poll.polls)
+    const loading = useSelector((state) => state.poll.loading)
+    const dispatch = useDispatch()
+
+
+    useEffect(() => {
+        dispatch(fetchPolls())
+    }, [])
+
     return (
         <div className="page">
             <h2 className="title">Discover Interesting Polls</h2>
@@ -27,20 +41,6 @@ const Discover = () => {
                                 </p>
                             </div>
                         </div>
-                        <div className="poll">
-                            <div className="poll__stats">
-                                <span className="poll__counter">1000</span>
-                                <img className="poll__image" src="https://strawpoll.com/images/strawpoll/strawpoll-logo.png" />
-                            </div>
-                            <div className="poll__info">
-                                <Link className="poll__title" to="/poll" >
-                                    What are you most excited for?
-                                </Link>
-                                <p className="poll__date">
-                                    Started on 14 June 2021 13:53.
-                                </p>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div className="polls__right">
@@ -48,20 +48,8 @@ const Discover = () => {
                         New Polls
                     </h3>
                     <div className="polls__list">
-                        <div className="poll">
-                            <div className="poll__stats">
-                                <span className="poll__counter">1000</span>
-                                <img className="poll__image" src="https://strawpoll.com/images/strawpoll/strawpoll-logo.png" />
-                            </div>
-                            <div className="poll__info">
-                                <Link className="poll__title" to="/poll" >
-                                    What are you most excited for?
-                                </Link>
-                                <p className="poll__date">
-                                    Started on 14 June 2021 13:53.
-                                </p>
-                            </div>
-                        </div>
+                        {loading && 'Загрузка'}
+                        {polls.length ? polls.map(poll => <Poll poll={poll} />) : <p>Пусто</p>}
                     </div>
                 </div>
             </div>
