@@ -9,7 +9,7 @@ const Create = () => {
 
     const updateOption = (value, id) => {
         const updated = options.map(option => {
-            if(option.id === id) {
+            if (option.id === id) {
                 option.text = value
             }
             return option
@@ -18,14 +18,22 @@ const Create = () => {
     }
 
     const focusHandler = (index) => {
-        if(index !== options.length - 1) return
+        if (index !== options.length - 1) return
 
-        setOptions([...options, {id: Date.now(), text: ''}])
+        setOptions([...options, { id: Date.now(), text: '' }])
     }
 
     const submitHandler = (e) => {
         e.preventDefault()
-        const optionsData = options.filter(option => option.text)
+        const filteredOptions = options.filter(option => option.text);
+        const optionsData = filteredOptions.map(option => (
+            {
+                id: option.id,
+                text: option.text,
+                votes: 0
+            }
+        ))
+
         const poll = {
             id: Date.now(),
             title,

@@ -5,10 +5,10 @@ const Poll = ({poll}) => {
         <div className="poll">
             <div className="poll__stats">
                 <span className="poll__counter">1000</span>
-                <img className="poll__image" src="https://strawpoll.com/images/strawpoll/strawpoll-logo.png" />
+                <img className="poll__image" src="https://strawpoll.com/images/strawpoll/strawpoll-logo.png" alt="poll" />
             </div>
             <div className="poll__info">
-                <Link className="poll__title link" to="/poll" >
+                <Link className="poll__title link" to={`/poll/${poll.id}`} >
                     {poll.title}
                 </Link>
                 <p className="poll__date">

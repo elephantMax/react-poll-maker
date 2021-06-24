@@ -1,55 +1,64 @@
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchPollById, vote } from '../store/slices/pollSlice';
+import { useEffect, useState } from 'react';
 
 const PollDetails = () => {
-    return (
-        <div className="page">
-            <div className="page-header">
-                <h2 className="title">
-                    What are you most excited for?
-                </h2>
-                <p className="subtitle">
-                    by <Link className="link">BenereV2</Link> · 8 days ago
-                </p>
-            </div>
+    const { poll, loading } = useSelector((state) => state.poll)
+    const dispatch = useDispatch()
+    const [selectedOption, setSelectedOption] = useState()
+    const { id } = useParams()
 
-            <div className="pollDetails__body">
-                <p className="subtitle">
-                    Choose one answer:
-                </p>
-                <form className="form-answer">
-                    <div className="form-answer__option">
-                        <input className="form-answer__input" type="radio" id="3" name="answer" />
-                        <label className="form-answer__label" htmlFor="3">
-                            Answer 3
-                        </label>
+    const submitHandler = (e) => {
+        e.preventDefault()
+        if (selectedOption) {
+            dispatch(vote({poll, optionId: selectedOption}))
+        }
+        // show message no selected
+    }
+
+    useEffect(() => {
+        dispatch(fetchPollById(id))
+    }, [dispatch, id])
+
+    return (
+        <>
+            {loading && 'Загрузка'}
+            {poll && (
+                <div className="page">
+                    <div className="page-header">
+                        <h2 className="title">
+                            {poll.title}
+                        </h2>
+                        <p className="subtitle">
+                            by <Link className="link" to="/">BenereV2</Link> · 8 days ago
+                        </p>
                     </div>
-                    <div className="form-answer__option">
-                        <input className="form-answer__input" type="radio" id="3" name="answer" />
-                        <label className="form-answer__label" htmlFor="3">
-                            Answer 3
-                        </label>
+
+                    <div className="pollDetails__body">
+                        <p className="subtitle">
+                            Choose one answer:
+                        </p>
+                        <form className="form-answer" onSubmit={submitHandler}>
+                            {poll.options.map(option =>
+                                <div className="form-answer__option" key={option.id}>
+                                    <input className="form-answer__input" type="radio" checked={selectedOption === option.id} onChange={() => setSelectedOption(option.id)} id={option.id} name="answer" />
+                                    <label className="form-answer__label" htmlFor={option.id}>
+                                        {option.text}
+                                    </label>
+                                </div>)}
+                            <div className="form-answer__actions">
+                                <button className="btn btn-green">Vote</button>
+                                <Link className="btn btn-dark" to="/results">
+                                    Results
+                                </Link>
+                            </div>
+                        </form>
                     </div>
-                    <div className="form-answer__option">
-                        <input className="form-answer__input" type="radio" id="3" name="answer" />
-                        <label className="form-answer__label" htmlFor="3">
-                            Answer 3
-                        </label>
-                    </div>
-                    <div className="form-answer__option">
-                        <input className="form-answer__input" type="radio" id="3" name="answer" />
-                        <label className="form-answer__label" htmlFor="3">
-                            Answer 3
-                        </label>
-                    </div>
-                    <div className="form-answer__actions">
-                        <button className="btn btn-green">Vote</button>
-                        <Link className="btn btn-dark" to="/results">
-                            Results
-                        </Link>
-                    </div>
-                </form>
-            </div>
-        </div>
+                </div>
+            )}
+            {!poll && !loading && 'Пусто'}
+        </>
     );
 }
 

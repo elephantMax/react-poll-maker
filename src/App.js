@@ -15,7 +15,7 @@ function App() {
           <Route path="/" exact component={Main}></Route>
           <Route path="/create" component={Create}></Route>
           <Route path="/discover" component={Discover}></Route>
-          <Route path="/poll" component={PollDetails}></Route>
+          <Route path="/poll/:id" component={PollDetails}></Route>
           <Route path="/results" component={Results}></Route>
           <Route path="*">
               <p style={{color:"white"}}>Not found</p>
