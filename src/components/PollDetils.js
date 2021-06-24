@@ -1,13 +1,14 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useHistory, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchPollById, vote } from '../store/slices/pollSlice';
+import { fetchPollById, setVoteLoading, vote } from '../store/slices/pollSlice';
 import { useEffect, useState } from 'react';
 
 const PollDetails = () => {
-    const { poll, loading } = useSelector((state) => state.poll)
+    const { poll, loading, voteLoading } = useSelector((state) => state.poll)
     const dispatch = useDispatch()
     const [selectedOption, setSelectedOption] = useState()
     const { id } = useParams()
+    const history = useHistory()
 
     const submitHandler = (e) => {
         e.preventDefault()
@@ -20,6 +21,13 @@ const PollDetails = () => {
     useEffect(() => {
         dispatch(fetchPollById(id))
     }, [dispatch, id])
+
+    useEffect(() => {
+        if(voteLoading === false) {
+            dispatch(setVoteLoading(null))       
+            history.push(`/success/${id}`)
+        }
+    }, [voteLoading, id, dispatch, history])
 
     return (
         <>
@@ -49,7 +57,7 @@ const PollDetails = () => {
                                 </div>)}
                             <div className="form-answer__actions">
                                 <button className="btn btn-green">Vote</button>
-                                <Link className="btn btn-dark" to="/results">
+                                <Link className="btn btn-dark" to={`/results/${id}`}>
                                     Results
                                 </Link>
                             </div>
@@ -58,6 +66,7 @@ const PollDetails = () => {
                 </div>
             )}
             {!poll && !loading && 'Пусто'}
+            {voteLoading && 'Обработка'}
         </>
     );
 }

@@ -5,6 +5,7 @@ import { Switch, Route } from 'react-router-dom'
 import Discover from "./components/Discover";
 import PollDetails from "./components/PollDetils";
 import Results from "./components/Results";
+import Success from "./components/Success";
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
           <Route path="/create" component={Create}></Route>
           <Route path="/discover" component={Discover}></Route>
           <Route path="/poll/:id" component={PollDetails}></Route>
-          <Route path="/results" component={Results}></Route>
+          <Route path="/results/:id" component={Results}></Route>
+          <Route path="/success/:id" component={Success}></Route>
           <Route path="*">
               <p style={{color:"white"}}>Not found</p>
           </Route>

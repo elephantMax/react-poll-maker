@@ -1,113 +1,75 @@
-import { Link } from 'react-router-dom'
+import { useMemo, useState } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useParams } from 'react-router-dom'
+import getTotalVotes from '../plugins/getTotalVotes';
+import { fetchPollById } from '../store/slices/pollSlice';
+import StatsOption from './StatsOption';
 
 const Results = () => {
+    const { id } = useParams()
+    const [totalVotes, setTotalVotes] = useState(0)
+    const { poll } = useSelector((state) => state.poll)
+
+    const sortedOptions = useMemo(() => {
+        if (poll) {
+            return [].concat(poll.options)
+                .sort((a, b) => a.votes < b.votes ? 1 : -1)
+        }
+        return []
+    }, [poll])
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(fetchPollById(id))
+    }, [dispatch, id])
+
+
+
+    useEffect(() => {
+        if (poll) {
+            setTotalVotes(getTotalVotes(poll))
+        }
+
+    }, [poll])
+
     return (
         <div className="results page">
-            <div className="page-header">
-                <h2 className="title">
-                    What are you most excited for?
-                </h2>
-                <p className="subtitle">
-                    by <Link className="link">BenereV2</Link> · 8 days ago
-                </p>
-            </div>
-            <div className="results__body">
-                <p className="subtitle">
-                    The results after 18432 people voted:
-                </p>
-                <div className="stats">
-                    <div className="stats__options">
-                        <div className="stats-option">
-                            <p className="stats-option__title">
-                                Fruits
+            <>
+                {poll ? (
+                    <>
+                        <div className="page-header">
+                            <h2 className="title">
+                                {poll.title}
+                            </h2>
+                            <p className="subtitle">
+                                by <Link className="link" to="/">BenereV2</Link> · 8 days ago
                             </p>
-                            <span className="stats-option__percents">
-                                48.54% (8947 votes)
-                            </span>
-                            <div className="progressbar">
-                                <span className="progressbar__value"></span>
-                            </div>
                         </div>
-                        <div className="stats-option">
-                            <p className="stats-option__title">
-                                Fruits
+                        <div className="results__body">
+                            <p className="subtitle">
+                                The results after 18432 people voted:
                             </p>
-                            <span className="stats-option__percents">
-                                48.54% (8947 votes)
-                            </span>
-                            <div className="progressbar">
-                                <span className="progressbar__value"></span>
-                            </div>
-                        </div>
-                        <div className="stats-option">
-                            <p className="stats-option__title">
-                                Fruits
-                            </p>
-                            <span className="stats-option__percents">
-                                48.54% (8947 votes)
-                            </span>
-                            <div className="progressbar">
-                                <span className="progressbar__value"></span>
-                            </div>
-                        </div>
-                        <div className="stats-option">
-                            <p className="stats-option__title">
-                                Fruits
-                            </p>
-                            <span className="stats-option__percents">
-                                48.54% (8947 votes)
-                            </span>
-                            <div className="progressbar">
-                                <span className="progressbar__value"></span>
-                            </div>
-                        </div>
-                        <div className="stats-option">
-                            <p className="stats-option__title">
-                                Fruits
-                            </p>
-                            <span className="stats-option__percents">
-                                48.54% (8947 votes)
-                            </span>
-                            <div className="progressbar">
-                                <span className="progressbar__value"></span>
-                            </div>
-                        </div>
-                        <div className="stats-option">
-                            <p className="stats-option__title">
-                                Fruits
-                            </p>
-                            <span className="stats-option__percents">
-                                48.54% (8947 votes)
-                            </span>
-                            <div className="progressbar">
-                                <span className="progressbar__value"></span>
-                            </div>
-                        </div>
-                        <div className="stats-option">
-                            <p className="stats-option__title">
-                                Fruits
-                            </p>
-                            <span className="stats-option__percents">
-                                48.54% (8947 votes)
-                            </span>
-                            <div className="progressbar">
-                                <span className="progressbar__value"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="diagramm">
+                            <div className="stats">
+                                <div className="stats__options">
+                                    {sortedOptions.map(option => <StatsOption key={option.id} option={option} totalVotes={totalVotes}></StatsOption>)}
+                                </div>
+                                <div className="diagramm">
 
-                    </div>
-                </div>
-                <h2 className="title">Total: 1232</h2>
+                                </div>
+                            </div>
+                            <h2 className="title">Total: {totalVotes}</h2>
 
-            </div>
-
+                        </div>
+                    </>
+                ) : <p>Загрузка</p>}
+            </>
             <div className="page-footer">
                 <button className="btn btn-green">
                     Refresh Results
                 </button>
-                <Link className="btn btn-dark" to="/poll">Back to Poll</Link>
+                <Link className="btn btn-dark" to={`/poll/${id}`}>Back to Poll</Link>
             </div>
         </div>
     );

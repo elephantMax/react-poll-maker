@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
+import getTotalVotes from '../plugins/getTotalVotes'
 
 const Poll = ({poll}) => {
+    const countVotes = getTotalVotes(poll)
     return (
         <div className="poll">
             <div className="poll__stats">
-                <span className="poll__counter">1000</span>
+                <span className="poll__counter">{countVotes}</span>
                 <img className="poll__image" src="https://strawpoll.com/images/strawpoll/strawpoll-logo.png" alt="poll" />
             </div>
             <div className="poll__info">

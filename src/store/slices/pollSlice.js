@@ -53,11 +53,15 @@ export const pollSlice = createSlice({
     initialState: {
         polls: [],
         poll: null,
-        loading: false
+        loading: false,
+        voteLoading: null
     },
     reducers: {
         setPolls: (state, action) => {
             state.polls = action.payload
+        },
+        setVoteLoading: (state, action) => {
+            state.voteLoading = action.payload
         }
     },
     extraReducers: {
@@ -86,10 +90,19 @@ export const pollSlice = createSlice({
         [fetchPollById.rejected]: (state, action) => {
             state.poll = action.payload
             state.loading = false
+        },
+        [vote.pending]: (state) => {
+            state.voteLoading = true
+        },
+        [vote.fulfilled]: (state) => {
+            state.voteLoading = false
+        },
+        [vote.rejected]: (state) => {
+            state.voteLoading = false
         }
     }
 })
 
-export const { setPolls } = pollSlice.actions
+export const { setPolls, setVoteLoading } = pollSlice.actions
 
 export default pollSlice.reducer
