@@ -6,8 +6,19 @@ import Discover from "./components/Discover";
 import PollDetails from "./components/PollDetils";
 import Results from "./components/Results";
 import Success from "./components/Success";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getCurrentUser } from "./store/slices/userSlice";
 
 function App() {
+  const { user } = useSelector(state => state.user)
+  const dispatch = useDispatch()
+  useEffect(() => {
+    if(!user) {
+      dispatch(getCurrentUser())
+    }
+  }, [user, dispatch])
+
   return (
     <div className="App">
       <Navbar />
