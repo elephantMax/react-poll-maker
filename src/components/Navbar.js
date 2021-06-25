@@ -34,9 +34,9 @@ const Navbar = () => {
                     <button onClick={logoutHandler} className="btn btn-dark">
                         Log out
                     </button>
-                    <button className="btn btn-blue">
+                    <Link to={`/profile/${user.uid}`} className="btn btn-blue">
                         {user.displayName}
-                    </button>
+                    </Link>
                 </div >
             ) : (
                 <div className="navbar__right">

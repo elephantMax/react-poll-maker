@@ -9,15 +9,21 @@ import Success from "./components/Success";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "./store/slices/userSlice";
+import Profile from "./components/Profile";
+import { fetchPolls } from "./store/slices/pollSlice";
 
 function App() {
   const { user } = useSelector(state => state.user)
+  const { polls } = useSelector(state => state.poll)
   const dispatch = useDispatch()
   useEffect(() => {
     if(!user) {
       dispatch(getCurrentUser())
     }
-  }, [user, dispatch])
+    if(!polls) {
+      dispatch(fetchPolls())
+    }
+  }, [user, dispatch, polls])
 
   return (
     <div className="App">
@@ -30,6 +36,7 @@ function App() {
           <Route path="/poll/:id" component={PollDetails}></Route>
           <Route path="/results/:id" component={Results}></Route>
           <Route path="/success/:id" component={Success}></Route>
+          <Route path="/profile/:id" component={Profile}></Route>
           <Route path="*">
               <p style={{color:"white"}}>Not found</p>
           </Route>

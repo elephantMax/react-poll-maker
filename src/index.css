@@ -343,3 +343,15 @@ body {
   border-radius: 50%;
   background-color: orange;
 }
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-bottom: 20px;
+}
+
+.profile__img {
+  max-width: 200px;
+  border-radius: 50%;
+}

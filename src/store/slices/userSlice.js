@@ -45,6 +45,15 @@ export const getCurrentUser = createAsyncThunk('users/getCurrentUser', async () 
     }
 })
 
+export const getUserById = createAsyncThunk('users/getUserById', async ({id}) => {
+    try {
+        const user = await (await firebase.database().ref(`/users/${id}`).once('value')).val()
+        return user;
+    } catch (error) {
+        return null
+    }
+})
+
 
 
 export const userSlice = createSlice({
@@ -52,7 +61,8 @@ export const userSlice = createSlice({
     initialState: {
         users: [],
         user: null,
-        loading: false
+        loading: false,
+        profileData: null
     },
     reducers: {
         setUsers: (state, action) => {
@@ -77,6 +87,9 @@ export const userSlice = createSlice({
         },
         [getCurrentUser.fulfilled]: (state, action) => {
             state.user = action.payload
+        },
+        [getUserById.fulfilled]: (state, action) => {
+            state.profileData = action.payload
         }
     }
 })

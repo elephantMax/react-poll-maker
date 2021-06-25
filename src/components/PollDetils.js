@@ -1,6 +1,6 @@
 import { Link, useHistory, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchPollById, setVoteLoading, vote } from '../store/slices/pollSlice';
+import { fetchPollById, setPoll, setVoteLoading, vote } from '../store/slices/pollSlice';
 import { useEffect, useState } from 'react';
 import useDateDifference from '../hooks/useDateDifference';
 
@@ -22,8 +22,13 @@ const PollDetails = () => {
     const dateDifference = useDateDifference(poll)
 
     useEffect(() => {
-        dispatch(fetchPollById(id))
-    }, [dispatch, id])
+        if (poll) {
+            if (poll.id !== +id) {
+                dispatch(setPoll(null))
+                dispatch(fetchPollById(id))
+            }
+        } else dispatch(fetchPollById(id))
+    }, [dispatch, id, poll])
 
     useEffect(() => {
         if (voteLoading === false) {
@@ -34,7 +39,7 @@ const PollDetails = () => {
 
     return (
         <>
-            {loading && 'Загрузка'}
+            {loading && <p className="subtitle">Загрузка</p>}
             {poll && (
                 <div className="page">
                     <div className="page-header">
@@ -42,7 +47,7 @@ const PollDetails = () => {
                             {poll.title}
                         </h2>
                         <p className="subtitle">
-                            by <Link className="link" to="/">BenereV2</Link> · {dateDifference} days ago
+                            by <Link className="link" to={`/profile/${poll.user_id}`}>{poll.user}</Link> · {dateDifference} days ago
                         </p>
                     </div>
 
@@ -68,8 +73,8 @@ const PollDetails = () => {
                     </div>
                 </div>
             )}
-            {!poll && !loading && 'Пусто'}
-            {voteLoading && 'Обработка'}
+            {!poll && !loading && <p className="subtitle">Пусто</p>}
+            {voteLoading && <p className="subtitle">Обработка</p>}
         </>
     );
 }
