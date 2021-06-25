@@ -1,6 +1,19 @@
 import { NavLink, Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux';
+import { logout, signIn } from '../store/slices/userSlice';
 
 const Navbar = () => {
+    const { user } = useSelector((state) => state.user)
+    const dispatch = useDispatch()
+
+    const signInHandler = () => {
+        dispatch(signIn())
+    }
+
+    const logoutHandler = () => {
+        dispatch(logout())
+    }
+
     return (
         <header className="navbar">
             <div className="navbar__left">
@@ -16,15 +29,26 @@ const Navbar = () => {
                     </NavLink>
                 </nav>
             </div>
-            <div className="navbar__right">
-                <button className="btn btn-dark">
-                    Log in
-                </button>
-                <button className="btn btn-blue">
-                    Sign up
-                </button>
-            </div>
-        </header>
+            {user ? (
+                <div className="navbar__right">
+                    <button onClick={logoutHandler} className="btn btn-dark">
+                        Log out
+                    </button>
+                    <button className="btn btn-blue">
+                        {user.displayName}
+                    </button>
+                </div >
+            ) : (
+                <div className="navbar__right">
+                    <button className="btn btn-dark">
+                        Log in
+                    </button>
+                    <button onClick={signInHandler} className="btn btn-blue">
+                        Sign up
+                    </button>
+                </div >
+            )}
+        </header >
     );
 }
 
