@@ -1,8 +1,12 @@
 import { useMemo } from "react";
 
 const StatsOption = ({ totalVotes, option }) => {
-    const percent = useMemo(() => (option.votes / totalVotes) * 100, [totalVotes, option]).toFixed(1)
-
+    const percent = useMemo(() => {
+        if(totalVotes) {
+            return (option.votes / totalVotes * 100).toFixed(1)
+        }
+        return 0
+    }, [totalVotes, option])
     return (
         <div key={option.id} className="stats-option">
             <p className="stats-option__title">

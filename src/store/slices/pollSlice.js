@@ -16,7 +16,11 @@ export const fetchPolls = createAsyncThunk('polls/fetchPolls', async () => {
 export const fetchPollById = createAsyncThunk('polls/fetchPollById', async (id) => {
     try {
         const response = await (await firebase.database().ref(`/polls/${id}`).once('value')).val()
-        return response
+        const user = await (await firebase.database().ref(`/users/${response.user_id}`).once('value')).val()
+        return {
+            ...response,
+            user: user.displayName
+        }
     } catch (error) {
         return null
     }
@@ -30,8 +34,8 @@ export const createPoll = createAsyncThunk('polls/createPoll', async (poll) => {
 
 export const vote = createAsyncThunk('polls/vote', async ({ poll, optionId }) => {
     try {
-        const options =  poll.options.map(option => {
-            if(option.id === optionId) {
+        const options = poll.options.map(option => {
+            if (option.id === optionId) {
                 return {
                     ...option,
                     votes: option.votes + 1
@@ -51,7 +55,7 @@ export const vote = createAsyncThunk('polls/vote', async ({ poll, optionId }) =>
 export const pollSlice = createSlice({
     name: 'poll',
     initialState: {
-        polls: [],
+        polls: null,
         poll: null,
         loading: false,
         voteLoading: null
@@ -60,12 +64,16 @@ export const pollSlice = createSlice({
         setPolls: (state, action) => {
             state.polls = action.payload
         },
+        setPoll: (state, action) => {
+            state.poll = action.payload
+        },
         setVoteLoading: (state, action) => {
             state.voteLoading = action.payload
         }
     },
     extraReducers: {
         [fetchPolls.pending]: (state) => {
+            state.polls = []
             if (!state.polls.length) {
                 state.loading = true
             }
@@ -79,9 +87,8 @@ export const pollSlice = createSlice({
             state.polls = action.payload
         },
         [fetchPollById.pending]: (state) => {
-            if (!state.poll) {
-                state.loading = true
-            }
+            if(!state.poll) state.loading = true
+            // state.poll = null
         },
         [fetchPollById.fulfilled]: (state, action) => {
             state.loading = false
@@ -103,6 +110,6 @@ export const pollSlice = createSlice({
     }
 })
 
-export const { setPolls, setVoteLoading } = pollSlice.actions
+export const { setPolls, setVoteLoading, setPoll } = pollSlice.actions
 
 export default pollSlice.reducer

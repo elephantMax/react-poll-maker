@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { createPoll } from "../store/slices/pollSlice";
+
 const Create = () => {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [options, setOptions] = useState([{ id: 1, text: 'example' }, { id: 2, text: '' }])
     const dispatch = useDispatch()
+    const { user } = useSelector((state) => state.user)
 
     const updateOption = (value, id) => {
         const updated = options.map(option => {
@@ -25,22 +27,26 @@ const Create = () => {
 
     const submitHandler = (e) => {
         e.preventDefault()
-        const filteredOptions = options.filter(option => option.text);
-        const optionsData = filteredOptions.map(option => (
-            {
-                id: option.id,
-                text: option.text,
-                votes: 0
-            }
-        ))
+        if (user) {
+            const filteredOptions = options.filter(option => option.text);
+            const optionsData = filteredOptions.map(option => (
+                {
+                    id: option.id,
+                    text: option.text,
+                    votes: 0
+                }
+            ))
 
-        const poll = {
-            id: Date.now(),
-            title,
-            description,
-            options: optionsData
+            const poll = {
+                id: Date.now(),
+                title,
+                description,
+                options: optionsData,
+                user_id: user.uid
+            }
+            dispatch(createPoll(poll))
         }
-        dispatch(createPoll(poll))
+        //message
     }
 
     return (

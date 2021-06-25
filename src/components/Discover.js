@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchPolls } from '../store/slices/pollSlice'
 import { useEffect } from 'react'
-import Poll from './Poll'
+import PollsList from './PollsList'
 
 const Discover = () => {
     const polls = useSelector((state) => state.poll.polls)
@@ -29,7 +29,7 @@ const Discover = () => {
                         <div className="poll">
                             <div className="poll__stats">
                                 <span className="poll__counter">1000</span>
-                                <img className="poll__image" src="https://strawpoll.com/images/strawpoll/strawpoll-logo.png" alt="poll"/>
+                                <img className="poll__image" src="https://strawpoll.com/images/strawpoll/strawpoll-logo.png" alt="poll" />
                             </div>
                             <div className="poll__info">
                                 <Link className="poll__title link" to="/poll" >
@@ -46,11 +46,7 @@ const Discover = () => {
                     <h3 className="title">
                         New Polls
                     </h3>
-                    <div className="polls__list">
-                        {loading && 'Загрузка'}
-                        {polls.length && polls.map(poll => <Poll poll={poll} key={poll.id} />)}
-                        {!polls.length && !loading && 'Пусто'}
-                    </div>
+                    {!loading ? <PollsList polls={polls} /> : <p className="subtitle">Загрузка</p>}
                 </div>
             </div>
         </div>
