@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import getTotalVotes from '../plugins/getTotalVotes'
+import getDate from '../plugins/getDate'
+import { useMemo } from 'react'
 
 const Poll = ({poll}) => {
-    const countVotes = getTotalVotes(poll)
+    const countVotes = useMemo(() => getTotalVotes(poll), [poll])
+    const date = useMemo(() => getDate(poll.id), [poll])
     return (
         <div className="poll">
             <div className="poll__stats">
@@ -14,7 +17,7 @@ const Poll = ({poll}) => {
                     {poll.title}
                 </Link>
                 <p className="poll__date">
-                    Started on 14 June 2021 13:53.
+                    Started on {date.day} {date.month} {date.year} {date.hours}:{date.minutes}
                 </p>
             </div>
         </div>

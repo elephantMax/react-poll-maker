@@ -5,6 +5,7 @@ import { Link, useParams } from 'react-router-dom'
 import getTotalVotes from '../plugins/getTotalVotes';
 import { fetchPollById } from '../store/slices/pollSlice';
 import StatsOption from './StatsOption';
+import useDateDifference from '../hooks/useDateDifference';
 
 const Results = () => {
     const { id } = useParams()
@@ -19,6 +20,8 @@ const Results = () => {
         return []
     }, [poll])
 
+    const dateDifference = useDateDifference(poll)
+
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -31,7 +34,6 @@ const Results = () => {
         if (poll) {
             setTotalVotes(getTotalVotes(poll))
         }
-
     }, [poll])
 
     return (
@@ -44,12 +46,12 @@ const Results = () => {
                                 {poll.title}
                             </h2>
                             <p className="subtitle">
-                                by <Link className="link" to="/">BenereV2</Link> · 8 days ago
+                                by <Link className="link" to="/">BenereV2</Link> · {dateDifference} days ago
                             </p>
                         </div>
                         <div className="results__body">
                             <p className="subtitle">
-                                The results after 18432 people voted:
+                                The results after people voted:
                             </p>
                             <div className="stats">
                                 <div className="stats__options">

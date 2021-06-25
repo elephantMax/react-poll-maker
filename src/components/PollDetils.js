@@ -2,6 +2,7 @@ import { Link, useHistory, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchPollById, setVoteLoading, vote } from '../store/slices/pollSlice';
 import { useEffect, useState } from 'react';
+import useDateDifference from '../hooks/useDateDifference';
 
 const PollDetails = () => {
     const { poll, loading, voteLoading } = useSelector((state) => state.poll)
@@ -13,18 +14,20 @@ const PollDetails = () => {
     const submitHandler = (e) => {
         e.preventDefault()
         if (selectedOption) {
-            dispatch(vote({poll, optionId: selectedOption}))
+            dispatch(vote({ poll, optionId: selectedOption }))
         }
         // show message no selected
     }
+
+    const dateDifference = useDateDifference(poll)
 
     useEffect(() => {
         dispatch(fetchPollById(id))
     }, [dispatch, id])
 
     useEffect(() => {
-        if(voteLoading === false) {
-            dispatch(setVoteLoading(null))       
+        if (voteLoading === false) {
+            dispatch(setVoteLoading(null))
             history.push(`/success/${id}`)
         }
     }, [voteLoading, id, dispatch, history])
@@ -39,7 +42,7 @@ const PollDetails = () => {
                             {poll.title}
                         </h2>
                         <p className="subtitle">
-                            by <Link className="link" to="/">BenereV2</Link> · 8 days ago
+                            by <Link className="link" to="/">BenereV2</Link> · {dateDifference} days ago
                         </p>
                     </div>
 
