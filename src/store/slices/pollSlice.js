@@ -6,7 +6,7 @@ export const fetchPolls = createAsyncThunk('polls/fetchPolls', async () => {
         const response = await (await firebase.database().ref('/polls').once('value')).val()
         const data = Object.keys(response).map(key => ({
             ...response[key],
-        }))
+        })).reverse()
         return data
     } catch (error) {
         return []
