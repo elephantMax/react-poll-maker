@@ -8,6 +8,7 @@ import StatsOption from './StatsOption';
 import useDateDifference from '../hooks/useDateDifference';
 import { PieChart } from 'react-minimal-pie-chart'
 import randomColor from 'randomcolor';
+import Loader from './Loader';
 
 const Results = () => {
     const { id } = useParams()
@@ -83,7 +84,7 @@ const Results = () => {
 
                         </div>
                     </>
-                ) : <p>Загрузка</p>}
+                ) : <Loader />}
             </>
             <div className="page-footer">
                 <button className="btn btn-green" onClick={clickHandler}>

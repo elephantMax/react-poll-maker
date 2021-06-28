@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getUserById } from "../store/slices/userSlice";
+import Loader from "./Loader";
 import PollsList from "./PollsList";
 
 const Profile = () => {
@@ -27,7 +28,7 @@ const Profile = () => {
                     <h2 className="subtitle">Polls</h2>
                     <PollsList polls={polls} />
                 </>
-            ) : <p className="subtitle">Загрузка</p>}
+            ) : <Loader /> }
         </div>
     );
 }

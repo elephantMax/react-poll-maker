@@ -11,16 +11,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "./store/slices/userSlice";
 import Profile from "./components/Profile";
 import { fetchPolls } from "./store/slices/pollSlice";
+import Loader from "./components/Loader";
 
 function App() {
-  const { user } = useSelector(state => state.user)
+  const { user, loading } = useSelector(state => state.user)
   const { polls } = useSelector(state => state.poll)
   const dispatch = useDispatch()
   useEffect(() => {
-    if(!user) {
+    if (!user) {
       dispatch(getCurrentUser())
     }
-    if(!polls) {
+    if (!polls) {
       dispatch(fetchPolls())
     }
   }, [user, dispatch, polls])
@@ -29,6 +30,11 @@ function App() {
     <div className="App">
       <Navbar />
       <div className="container">
+        {loading && (
+          <div className="page-loader">
+            <Loader />
+          </div>
+        )}
         <Switch>
           <Route path="/" exact component={Main}></Route>
           <Route path="/create" component={Create}></Route>
@@ -38,7 +44,7 @@ function App() {
           <Route path="/success/:id" component={Success}></Route>
           <Route path="/profile/:id" component={Profile}></Route>
           <Route path="*">
-              <p style={{color:"white"}}>Not found</p>
+            <p style={{ color: "white" }}>Not found</p>
           </Route>
         </Switch>
       </div>

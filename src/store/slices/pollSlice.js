@@ -27,9 +27,15 @@ export const fetchPollById = createAsyncThunk('polls/fetchPollById', async (id) 
 })
 
 export const createPoll = createAsyncThunk('polls/createPoll', async (poll) => {
-    await firebase.database().ref(`/polls/${poll.id}`).set({
-        ...poll
-    })
+    try {
+        await firebase.database().ref(`/polls/${poll.id}`).set({
+            ...poll
+        })
+        return poll
+    } catch (error) {
+        console.log(error);
+        return null
+    }
 })
 
 export const vote = createAsyncThunk('polls/vote', async ({ poll, optionId }) => {
@@ -46,6 +52,10 @@ export const vote = createAsyncThunk('polls/vote', async ({ poll, optionId }) =>
         await firebase.database().ref(`/polls/${poll.id}/options`).update({
             ...options
         })
+        return {
+            ...poll,
+            options
+        }
     } catch (error) {
         console.log(error);
     }
@@ -57,8 +67,10 @@ export const pollSlice = createSlice({
     initialState: {
         polls: null,
         poll: null,
-        loading: false,
-        voteLoading: null
+        pollsLoading: false,
+        pollLoading: false,
+        voteLoading: null,
+        createLoading: false
     },
     reducers: {
         setPolls: (state, action) => {
@@ -79,7 +91,7 @@ export const pollSlice = createSlice({
             }
         },
         [fetchPolls.fulfilled]: (state, action) => {
-            state.loading = false
+            state.pollsLoading = false
             state.polls = action.payload
         },
         [fetchPolls.rejected]: (state, action) => {
@@ -87,25 +99,35 @@ export const pollSlice = createSlice({
             state.polls = action.payload
         },
         [fetchPollById.pending]: (state) => {
-            if(!state.poll) state.loading = true
-            // state.poll = null
+            if (!state.poll) state.pollLoading = true
         },
         [fetchPollById.fulfilled]: (state, action) => {
-            state.loading = false
+            state.pollLoading = false
             state.poll = action.payload
         },
         [fetchPollById.rejected]: (state, action) => {
             state.poll = action.payload
-            state.loading = false
+            state.pollLoading = false
         },
         [vote.pending]: (state) => {
             state.voteLoading = true
         },
-        [vote.fulfilled]: (state) => {
+        [vote.fulfilled]: (state, action) => {
             state.voteLoading = false
+            state.polls = state.polls.map(poll => poll.id === action.payload.id ? action.payload : poll)
         },
         [vote.rejected]: (state) => {
             state.voteLoading = false
+        },
+        [createPoll.pending]: state => {
+            state.createLoading = true
+        },
+        [createPoll.fulfilled]: (state, action) => {
+            state.createLoading = false
+            state.polls = [...state.polls, action.payload]
+        },
+        [createPoll.rejected]: state => {
+            state.createLoading = false
         }
     }
 })

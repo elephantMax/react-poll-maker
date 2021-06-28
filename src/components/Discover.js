@@ -6,7 +6,7 @@ import getTotalVotes from '../plugins/getTotalVotes'
 
 const Discover = () => {
     const polls = useSelector((state) => state.poll.polls)
-    const loading = useSelector((state) => state.poll.loading)
+    const { pollsLoading } = useSelector((state) => state.poll)
     const dispatch = useDispatch()
 
     const trandingPolls = useMemo(() => {
@@ -21,8 +21,10 @@ const Discover = () => {
 
 
     useEffect(() => {
-        dispatch(fetchPolls())
-    }, [dispatch])
+        if(!polls) {
+            dispatch(fetchPolls())
+        }
+    }, [dispatch, polls])
 
     return (
         <div className="page">
@@ -35,13 +37,13 @@ const Discover = () => {
                     <h3 className="title">
                         Trending Polls
                     </h3>
-                    {!loading ? <PollsList polls={trandingPolls} /> : <p className="subtitle">Загрузка</p>}
+                    {!pollsLoading ? <PollsList polls={trandingPolls} /> : <p className="subtitle">Загрузка</p>}
                 </div>
                 <div className="polls__right">
                     <h3 className="title">
                         New Polls
                     </h3>
-                    {!loading ? <PollsList polls={polls} /> : <p className="subtitle">Загрузка</p>}
+                    {!pollsLoading ? <PollsList polls={polls} /> : <p className="subtitle">Загрузка</p>}
                 </div>
             </div>
         </div>

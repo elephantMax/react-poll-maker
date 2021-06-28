@@ -85,11 +85,16 @@ export const userSlice = createSlice({
         [getCurrentUser.rejected]: (state, action) => {
             state.user = action.payload
         },
+        [getCurrentUser.pending]: (state) => {
+            state.loading = true
+        },
         [getCurrentUser.fulfilled]: (state, action) => {
             state.user = action.payload
+            state.loading = false
         },
         [getUserById.fulfilled]: (state, action) => {
             state.profileData = action.payload
+            
         }
     }
 })
