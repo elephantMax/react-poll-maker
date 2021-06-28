@@ -16,7 +16,7 @@ const StatsOption = ({ totalVotes, option }) => {
                 {percent}% ({option.votes} votes)
             </span>
             <div className="progressbar">
-                <span style={{right: `${100 - percent}%`}} className="progressbar__value"></span>
+                <span style={{right: `${100 - percent}%`, backgroundColor: option.color}} className="progressbar__value"></span>
             </div>
         </div>
     );
