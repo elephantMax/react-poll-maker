@@ -52,6 +52,10 @@ const Results = () => {
         }
     }, [poll])
 
+    const clickHandler = () => {
+        dispatch(fetchPollById(id))
+    }
+
     return (
         <div className="results page">
             <>
@@ -82,7 +86,7 @@ const Results = () => {
                 ) : <p>Загрузка</p>}
             </>
             <div className="page-footer">
-                <button className="btn btn-green">
+                <button className="btn btn-green" onClick={clickHandler}>
                     Refresh Results
                 </button>
                 <Link className="btn btn-dark" to={`/poll/${id}`}>Back to Poll</Link>
