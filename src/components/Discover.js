@@ -1,13 +1,24 @@
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchPolls } from '../store/slices/pollSlice'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import PollsList from './PollsList'
+import getTotalVotes from '../plugins/getTotalVotes'
 
 const Discover = () => {
     const polls = useSelector((state) => state.poll.polls)
     const loading = useSelector((state) => state.poll.loading)
     const dispatch = useDispatch()
+
+    const trandingPolls = useMemo(() => {
+        if(polls) {
+            const pollsWithTotal = [...polls].map(poll => ({
+                ...poll,
+                total: getTotalVotes(poll)
+            }))
+            return pollsWithTotal.sort((a, b) => a.total < b.total ? 1 : -1)
+        }
+    }, [polls])
 
 
     useEffect(() => {
@@ -25,22 +36,7 @@ const Discover = () => {
                     <h3 className="title">
                         Trending Polls
                     </h3>
-                    <div className="polls__list">
-                        <div className="poll">
-                            <div className="poll__stats">
-                                <span className="poll__counter">1000</span>
-                                <img className="poll__image" src="https://strawpoll.com/images/strawpoll/strawpoll-logo.png" alt="poll" />
-                            </div>
-                            <div className="poll__info">
-                                <Link className="poll__title link" to="/poll" >
-                                    What are you most excited for?
-                                </Link>
-                                <p className="poll__date">
-                                    Started on 14 June 2021 13:53.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                    {!loading ? <PollsList polls={trandingPolls} /> : <p className="subtitle">Загрузка</p>}
                 </div>
                 <div className="polls__right">
                     <h3 className="title">
