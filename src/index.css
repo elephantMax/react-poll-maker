@@ -340,8 +340,6 @@ body {
 .diagramm {
   aspect-ratio: 1/1;
   width: 300px;
-  border-radius: 50%;
-  background-color: orange;
 }
 
 .profile {
