@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchPolls } from '../store/slices/pollSlice'
 import { useEffect, useMemo } from 'react'
