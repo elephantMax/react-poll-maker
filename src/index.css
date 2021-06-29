@@ -144,6 +144,9 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-height: 400px;
+  position: relative;
+  /* height: 100%; */
 }
 
 .page-footer {
@@ -352,4 +355,40 @@ body {
 .profile__img {
   max-width: 200px;
   border-radius: 50%;
+}
+
+.page-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(102, 101, 101, 0.863);
+  z-index: 999;
+}
+
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border-top-color: black;
+  border-bottom-color: black;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-width: 10px;
+  border-style: solid;
+  animation: loader 1s ease-in-out 0s infinite;
+}
+
+@keyframes loader {
+  from{
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
