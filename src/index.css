@@ -191,6 +191,11 @@ body {
   color: white;
 }
 
+.form__input--danger {
+  box-shadow: 0px 0px 7px red;
+  /* border: 1px rgb(248, 50, 50) solid; */
+}
+
 .polls {
   display: flex;
   column-gap: 40px;
@@ -296,6 +301,11 @@ body {
   align-items: center;
   justify-content: space-between;
   padding-top: 20px;
+}
+
+.form__error {
+  color: rgb(255, 68, 68);
+  font-size: 17px;
 }
 
 .stats {
