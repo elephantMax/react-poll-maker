@@ -49,7 +49,7 @@ const Create = () => {
             {
                 id: option.id,
                 text: option.text,
-                votes: 0
+                votes: []
             }
         ))
 

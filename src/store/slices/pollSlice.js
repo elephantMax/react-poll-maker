@@ -16,7 +16,7 @@ export const fetchPolls = createAsyncThunk('polls/fetchPolls', async () => {
 export const fetchPollById = createAsyncThunk('polls/fetchPollById', async (id) => {
     try {
         const response = await (await firebase.database().ref(`/polls/${id}`).once('value')).val()
-        if(!response.user_id) {
+        if (!response.user_id) {
             return response
         }
         const user = await (await firebase.database().ref(`/users/${response.user_id}`).once('value')).val()
@@ -36,31 +36,66 @@ export const createPoll = createAsyncThunk('polls/createPoll', async (poll) => {
         })
         return poll
     } catch (error) {
-        console.log(error);
         return null
     }
 })
 
 export const vote = createAsyncThunk('polls/vote', async ({ poll, optionId }) => {
     try {
+        const session_id = sessionStorage.getItem('session_id')
+
+        if (!session_id) {
+            throw new Error()
+        }
+
+        let hasError = false
+        poll.options.forEach(option => {
+            if (!option.votes) return
+
+            const alreadyVoted = option.votes.find(item => item.session_id === session_id)
+            if (alreadyVoted) hasError = true
+        })
+
+        if (hasError) throw new Error('duplicated vote')
+
         const options = poll.options.map(option => {
+            const uniqueSessions = new Set()
+
             if (option.id === optionId) {
+                let filteredVotes = []
+                if (option.votes) {
+                    filteredVotes = option.votes.filter(item => {
+                        if (!uniqueSessions.has(item.session_id)) {
+                            uniqueSessions.add(item.session_id)
+                            return true
+                        }
+                        return false
+                    })
+                }
+
+                const votes = [
+                    ...filteredVotes,
+                    { session_id }
+                ]
+
                 return {
                     ...option,
-                    votes: option.votes + 1
+                    votes
                 }
             }
             return option
         });
+
         await firebase.database().ref(`/polls/${poll.id}/options`).update({
             ...options
         })
+
         return {
             ...poll,
             options
         }
     } catch (error) {
-        console.log(error);
+        throw new Error('duplicated vote')
     }
 
 })
@@ -73,7 +108,8 @@ export const pollSlice = createSlice({
         pollsLoading: false,
         pollLoading: false,
         voteLoading: null,
-        createLoading: false
+        createLoading: false,
+        hasDuplicationError: false
     },
     reducers: {
         setPolls: (state, action) => {
@@ -97,9 +133,8 @@ export const pollSlice = createSlice({
             state.pollsLoading = false
             state.polls = action.payload
         },
-        [fetchPolls.rejected]: (state, action) => {
+        [fetchPolls.rejected]: (state) => {
             state.loading = false
-            state.polls = action.payload
         },
         [fetchPollById.pending]: (state) => {
             if (!state.poll) state.pollLoading = true
@@ -118,9 +153,11 @@ export const pollSlice = createSlice({
         [vote.fulfilled]: (state, action) => {
             state.voteLoading = false
             state.polls = state.polls.map(poll => poll.id === action.payload.id ? action.payload : poll)
+            state.poll = action.payload
         },
         [vote.rejected]: (state) => {
             state.voteLoading = false
+            state.hasDuplicationError = true
         },
         [createPoll.pending]: state => {
             state.createLoading = true

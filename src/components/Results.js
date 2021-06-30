@@ -21,7 +21,7 @@ const Results = () => {
                 color: randomColor(),
             }))
             return [].concat(options)
-                .sort((a, b) => a.votes < b.votes ? 1 : -1)
+                .sort((a, b) => (a.votes?.length || 0) < (b.votes?.length || 0) ? 1 : -1)
         }
         return []
     }, [poll])
@@ -30,7 +30,7 @@ const Results = () => {
         if (sortedOptions) {
             return [...sortedOptions].map(option => ({
                 title: option.text,
-                value: option.votes,
+                value: option.votes?.length || 0,
                 color: option.color
             }))
         }
