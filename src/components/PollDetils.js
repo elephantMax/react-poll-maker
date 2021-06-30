@@ -51,7 +51,7 @@ const PollDetails = () => {
                                 {poll.title}
                             </h2>
                             <p className="subtitle">
-                                by <Link className="link" to={`/profile/${poll.user_id}`}>{poll.user}</Link> · {dateDifference} days ago
+                                by {poll.user ? <Link className="link" to={`/profile/${poll.user_id}`}>{poll.user}</Link> : <span className="subtitle">guest</span>} · {dateDifference} days ago
                             </p>
                         </div>
 

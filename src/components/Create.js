@@ -34,41 +34,39 @@ const Create = () => {
     }
 
     const submitHandler = () => {
-        if (user) {
-            const uniqueOptions = new Set()
 
-            const filteredOptions = options.filter(option => {
-                if (!uniqueOptions.has(option.text.trim()) && option.text) {
-                    uniqueOptions.add(option.text.trim())
-                    return true
-                }
-                return false
-            });
+        const uniqueOptions = new Set()
 
-            const optionsData = filteredOptions.map(option => (
-                {
-                    id: option.id,
-                    text: option.text,
-                    votes: 0
-                }
-            ))
-         
-            if (!optionsData.length) {
-                setError('options')
-                return
+        const filteredOptions = options.filter(option => {
+            if (!uniqueOptions.has(option.text.trim()) && option.text) {
+                uniqueOptions.add(option.text.trim())
+                return true
             }
+            return false
+        });
 
-            const poll = {
-                id: Date.now(),
-                title,
-                description,
-                options: optionsData,
-                user_id: user.uid
+        const optionsData = filteredOptions.map(option => (
+            {
+                id: option.id,
+                text: option.text,
+                votes: 0
             }
-            dispatch(createPoll(poll))
-            history.push(`/poll/${poll.id}`)
+        ))
+
+        if (!optionsData.length) {
+            setError('options')
+            return
         }
-        //message
+
+        const poll = {
+            id: Date.now(),
+            title,
+            description,
+            options: optionsData,
+            user_id: user ? user.uid : null
+        }
+        dispatch(createPoll(poll))
+        history.push(`/poll/${poll.id}`)
     }
 
     return (

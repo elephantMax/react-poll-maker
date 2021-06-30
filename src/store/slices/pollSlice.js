@@ -16,6 +16,9 @@ export const fetchPolls = createAsyncThunk('polls/fetchPolls', async () => {
 export const fetchPollById = createAsyncThunk('polls/fetchPollById', async (id) => {
     try {
         const response = await (await firebase.database().ref(`/polls/${id}`).once('value')).val()
+        if(!response.user_id) {
+            return response
+        }
         const user = await (await firebase.database().ref(`/users/${response.user_id}`).once('value')).val()
         return {
             ...response,
