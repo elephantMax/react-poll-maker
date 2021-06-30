@@ -4,6 +4,7 @@ import { fetchPollById, setPoll, setVoteLoading, vote } from '../store/slices/po
 import { useEffect, useState } from 'react';
 import useDateDifference from '../hooks/useDateDifference';
 import Loader from './Loader';
+import { useForm } from 'react-hook-form';
 
 const PollDetails = () => {
     const { poll, pollLoading, voteLoading } = useSelector((state) => state.poll)
@@ -11,13 +12,14 @@ const PollDetails = () => {
     const [selectedOption, setSelectedOption] = useState()
     const { id } = useParams()
     const history = useHistory()
+    const { setError, formState: { errors } } = useForm()
 
     const submitHandler = (e) => {
         e.preventDefault()
         if (selectedOption) {
             dispatch(vote({ poll, optionId: selectedOption }))
         }
-        // show message no selected
+        setError('options')
     }
 
     const dateDifference = useDateDifference(poll)
@@ -49,7 +51,7 @@ const PollDetails = () => {
                                 {poll.title}
                             </h2>
                             <p className="subtitle">
-                                by <Link className="link" to={`/profile/${poll.user_id}`}>{poll.user}</Link> · {dateDifference} days ago
+                                by {poll.user ? <Link className="link" to={`/profile/${poll.user_id}`}>{poll.user}</Link> : <span className="subtitle">guest</span>} · {dateDifference} days ago
                             </p>
                         </div>
 
@@ -65,6 +67,7 @@ const PollDetails = () => {
                                             {option.text}
                                         </label>
                                     </div>)}
+                                    {errors.options && <span className="form__error">Choose one of this answers</span>}
                                 <div className="form-answer__actions">
                                     <button className="btn btn-green">Vote</button>
                                     <Link className="btn btn-dark" to={`/results/${id}`}>
