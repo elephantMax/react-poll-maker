@@ -12,12 +12,18 @@ import { getCurrentUser } from "./store/slices/userSlice";
 import Profile from "./components/Profile";
 import { fetchPolls } from "./store/slices/pollSlice";
 import Loader from "./components/Loader";
+import crypto from 'crypto'
 
 function App() {
   const { user, loading } = useSelector(state => state.user)
   const { polls } = useSelector(state => state.poll)
   const dispatch = useDispatch()
   useEffect(() => {
+    const session_id = localStorage.getItem('session_id')
+    if(!session_id) {
+      const id = crypto.randomBytes(16).toString('base64')
+      localStorage.setItem('session_id', id)
+    }
     if (!user) {
       dispatch(getCurrentUser())
     }
