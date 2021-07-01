@@ -42,7 +42,7 @@ export const createPoll = createAsyncThunk('polls/createPoll', async (poll) => {
 
 export const vote = createAsyncThunk('polls/vote', async ({ poll, optionId }) => {
     try {
-        const session_id = sessionStorage.getItem('session_id')
+        const session_id = localStorage.getItem('session_id')
 
         if (!session_id) {
             throw new Error()
@@ -109,7 +109,7 @@ export const pollSlice = createSlice({
         pollLoading: false,
         voteLoading: null,
         createLoading: false,
-        hasDuplicationError: false
+        hasDuplicationError: null
     },
     reducers: {
         setPolls: (state, action) => {
@@ -120,6 +120,9 @@ export const pollSlice = createSlice({
         },
         setVoteLoading: (state, action) => {
             state.voteLoading = action.payload
+        },
+        setHasDuplicationError: (state, action) => {
+            state.hasDuplicationError = action.payload
         }
     },
     extraReducers: {
@@ -141,6 +144,7 @@ export const pollSlice = createSlice({
         },
         [fetchPollById.fulfilled]: (state, action) => {
             state.pollLoading = false
+            state.hasDuplicationError = false
             state.poll = action.payload
         },
         [fetchPollById.rejected]: (state, action) => {
@@ -151,12 +155,12 @@ export const pollSlice = createSlice({
             state.voteLoading = true
         },
         [vote.fulfilled]: (state, action) => {
-            state.voteLoading = false
+            state.voteLoading = null
             state.polls = state.polls.map(poll => poll.id === action.payload.id ? action.payload : poll)
             state.poll = action.payload
         },
         [vote.rejected]: (state) => {
-            state.voteLoading = false
+            state.voteLoading = null
             state.hasDuplicationError = true
         },
         [createPoll.pending]: state => {
@@ -172,6 +176,6 @@ export const pollSlice = createSlice({
     }
 })
 
-export const { setPolls, setVoteLoading, setPoll } = pollSlice.actions
+export const { setPolls, setVoteLoading, setPoll, setHasDuplicationError } = pollSlice.actions
 
 export default pollSlice.reducer

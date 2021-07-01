@@ -14,6 +14,8 @@ const PollDetails = () => {
     const history = useHistory()
     const { setError, formState: { errors } } = useForm()
 
+    
+
     const submitHandler = (e) => {
         e.preventDefault()
         if (selectedOption) {

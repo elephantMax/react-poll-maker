@@ -19,10 +19,10 @@ function App() {
   const { polls } = useSelector(state => state.poll)
   const dispatch = useDispatch()
   useEffect(() => {
-    const session_id = sessionStorage.getItem('session_id')
+    const session_id = localStorage.getItem('session_id')
     if(!session_id) {
       const id = crypto.randomBytes(16).toString('base64')
-      sessionStorage.setItem('session_id', id)
+      localStorage.setItem('session_id', id)
     }
     if (!user) {
       dispatch(getCurrentUser())
