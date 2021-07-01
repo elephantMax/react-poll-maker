@@ -65,6 +65,11 @@ const Create = () => {
             options: optionsData,
             user_id: user ? user.uid : null
         }
+
+        const session_id = localStorage.getItem('session_id')
+
+        if(!poll.user_id) poll.session_id = session_id 
+
         dispatch(createPoll(poll))
         history.push(`/poll/${poll.id}`)
     }

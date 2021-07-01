@@ -40,6 +40,15 @@ export const createPoll = createAsyncThunk('polls/createPoll', async (poll) => {
     }
 })
 
+export const removePoll = createAsyncThunk('polls/removePoll', async (id) => {
+    try {
+        await firebase.database().ref(`/polls/${id}`).remove()
+        return +id
+    } catch (error) {
+        return null
+    }
+})
+
 export const vote = createAsyncThunk('polls/vote', async ({ poll, optionId }) => {
     try {
         const session_id = localStorage.getItem('session_id')
@@ -109,7 +118,8 @@ export const pollSlice = createSlice({
         pollLoading: false,
         voteLoading: null,
         createLoading: false,
-        hasDuplicationError: null
+        hasDuplicationError: null,
+        deleted: false
     },
     reducers: {
         setPolls: (state, action) => {
@@ -123,6 +133,9 @@ export const pollSlice = createSlice({
         },
         setHasDuplicationError: (state, action) => {
             state.hasDuplicationError = action.payload
+        },
+        setDeleted: (state, action) => {
+            state.deleted = action.payload
         }
     },
     extraReducers: {
@@ -168,14 +181,18 @@ export const pollSlice = createSlice({
         },
         [createPoll.fulfilled]: (state, action) => {
             state.createLoading = false
-            state.polls = [...state.polls, action.payload]
+            state.polls = [action.payload, ...state.polls]
         },
         [createPoll.rejected]: state => {
             state.createLoading = false
+        },
+        [removePoll.fulfilled]: (state, action) => {
+            state.polls = state.polls.filter(poll => poll.id !== action.payload)
+            state.deleted = true
         }
     }
 })
 
-export const { setPolls, setVoteLoading, setPoll, setHasDuplicationError } = pollSlice.actions
+export const { setPolls, setVoteLoading, setPoll, setHasDuplicationError, setDeleted } = pollSlice.actions
 
 export default pollSlice.reducer
