@@ -155,7 +155,7 @@ export const pollSlice = createSlice({
             state.voteLoading = true
         },
         [vote.fulfilled]: (state, action) => {
-            state.voteLoading = null
+            state.voteLoading = false
             state.polls = state.polls.map(poll => poll.id === action.payload.id ? action.payload : poll)
             state.poll = action.payload
         },
