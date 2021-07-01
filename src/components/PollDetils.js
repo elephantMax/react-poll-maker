@@ -1,20 +1,21 @@
 import { Link, useHistory, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchPollById, setPoll, setVoteLoading, vote } from '../store/slices/pollSlice';
-import { useEffect, useState } from 'react';
+import { fetchPollById, removePoll, setDeleted, setPoll, setVoteLoading, vote } from '../store/slices/pollSlice';
+import { useEffect, useMemo, useState } from 'react';
 import useDateDifference from '../hooks/useDateDifference';
 import Loader from './Loader';
 import { useForm } from 'react-hook-form';
 
 const PollDetails = () => {
-    const { poll, pollLoading, voteLoading, hasDuplicationError } = useSelector((state) => state.poll)
+    const { poll, pollLoading, voteLoading, hasDuplicationError, deleted } = useSelector((state) => state.poll)
+    const { user } = useSelector(state => state.user)
     const dispatch = useDispatch()
     const [selectedOption, setSelectedOption] = useState()
     const { id } = useParams()
     const history = useHistory()
     const { setError, formState: { errors } } = useForm()
 
-    
+    const session_id = localStorage.getItem('session_id')
 
     const submitHandler = (e) => {
         e.preventDefault()
@@ -25,7 +26,18 @@ const PollDetails = () => {
         }
     }
 
+    const clickHandler = () => {
+        dispatch(removePoll(id))
+    }
+
     const dateDifference = useDateDifference(poll)
+
+    useEffect(() => {
+        if (deleted) {
+            dispatch(setDeleted(false))
+            history.push('/discover')
+        }
+    }, [deleted, history, dispatch])
 
     useEffect(() => {
         if (poll) {
@@ -43,6 +55,21 @@ const PollDetails = () => {
         }
     }, [voteLoading, id, dispatch, history, hasDuplicationError])
 
+    const canDelete = useMemo(() => {
+        if (!poll) {
+            return false
+        }
+        if (user) {
+            if (user.uid === poll.user_id) {
+                return true
+            }
+            return false
+        } else if (session_id === poll?.session_id) {
+            return true
+        }
+        return false
+    }, [poll, user, session_id])
+
     return (
         <>
             <div className="page">
@@ -56,6 +83,11 @@ const PollDetails = () => {
                             <p className="subtitle">
                                 by {poll.user ? <Link className="link" to={`/profile/${poll.user_id}`}>{poll.user}</Link> : <span className="subtitle">guest</span>} · {dateDifference} days ago
                             </p>
+                            {canDelete && <span className="page-header__btn">
+                                <button className="btn btn-red" onClick={clickHandler}>
+                                    Удалить
+                                </button>
+                            </span>}
                         </div>
 
                         <div className="pollDetails__body">
