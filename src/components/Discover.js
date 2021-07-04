@@ -5,8 +5,7 @@ import PollsList from './PollsList'
 import getTotalVotes from '../plugins/getTotalVotes'
 
 const Discover = () => {
-    const polls = useSelector((state) => state.poll.polls)
-    const { pollsLoading } = useSelector((state) => state.poll)
+    const { polls, pollsLoading } = useSelector((state) => state.poll)
     const dispatch = useDispatch()
 
     const trandingPolls = useMemo(() => {

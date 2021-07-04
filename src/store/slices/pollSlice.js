@@ -116,10 +116,6 @@ export const pollSlice = createSlice({
         poll: null,
         pollsLoading: false,
         pollLoading: false,
-        voteLoading: null,
-        createLoading: false,
-        hasDuplicationError: null,
-        deleted: false
     },
     reducers: {
         setPolls: (state, action) => {
@@ -127,22 +123,13 @@ export const pollSlice = createSlice({
         },
         setPoll: (state, action) => {
             state.poll = action.payload
-        },
-        setVoteLoading: (state, action) => {
-            state.voteLoading = action.payload
-        },
-        setHasDuplicationError: (state, action) => {
-            state.hasDuplicationError = action.payload
-        },
-        setDeleted: (state, action) => {
-            state.deleted = action.payload
         }
     },
     extraReducers: {
         [fetchPolls.pending]: (state) => {
             state.polls = []
             if (!state.polls.length) {
-                state.loading = true
+                state.pollsLoading = true
             }
         },
         [fetchPolls.fulfilled]: (state, action) => {
@@ -150,14 +137,13 @@ export const pollSlice = createSlice({
             state.polls = action.payload
         },
         [fetchPolls.rejected]: (state) => {
-            state.loading = false
+            state.pollsLoading = false
         },
         [fetchPollById.pending]: (state) => {
             if (!state.poll) state.pollLoading = true
         },
         [fetchPollById.fulfilled]: (state, action) => {
             state.pollLoading = false
-            state.hasDuplicationError = false
             state.poll = action.payload
         },
         [fetchPollById.rejected]: (state, action) => {
@@ -168,31 +154,18 @@ export const pollSlice = createSlice({
             state.voteLoading = true
         },
         [vote.fulfilled]: (state, action) => {
-            state.voteLoading = false
             state.polls = state.polls.map(poll => poll.id === action.payload.id ? action.payload : poll)
             state.poll = action.payload
         },
-        [vote.rejected]: (state) => {
-            state.voteLoading = null
-            state.hasDuplicationError = true
-        },
-        [createPoll.pending]: state => {
-            state.createLoading = true
-        },
         [createPoll.fulfilled]: (state, action) => {
-            state.createLoading = false
             state.polls = [action.payload, ...state.polls]
-        },
-        [createPoll.rejected]: state => {
-            state.createLoading = false
         },
         [removePoll.fulfilled]: (state, action) => {
             state.polls = state.polls.filter(poll => poll.id !== action.payload)
-            state.deleted = true
         }
     }
 })
 
-export const { setPolls, setVoteLoading, setPoll, setHasDuplicationError, setDeleted } = pollSlice.actions
+export const { setPolls, setPoll } = pollSlice.actions
 
 export default pollSlice.reducer

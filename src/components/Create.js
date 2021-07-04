@@ -9,9 +9,10 @@ const Create = () => {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [options, setOptions] = useState([{ id: 1, text: 'example' }, { id: 2, text: '' }])
+    const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()
     const { user } = useSelector((state) => state.user)
-    const { craeteLoading } = useSelector((state) => state.poll)
+
     const history = useHistory()
     const { register, handleSubmit, setError, clearErrors, formState: { errors } } = useForm()
 
@@ -33,7 +34,7 @@ const Create = () => {
         setOptions([...options, { id: Date.now(), text: '' }])
     }
 
-    const submitHandler = () => {
+    const submitHandler = async () => {
 
         const uniqueOptions = new Set()
 
@@ -68,10 +69,19 @@ const Create = () => {
 
         const session_id = localStorage.getItem('session_id')
 
-        if(!poll.user_id) poll.session_id = session_id 
+        if (!poll.user_id) poll.session_id = session_id
 
-        dispatch(createPoll(poll))
-        history.push(`/poll/${poll.id}`)
+        try {
+            const data = await dispatch(createPoll(poll))
+            if(data.error) {
+                throw new Error(data.error.message)
+            }
+            history.push(`/poll/${poll.id}`)
+        } catch (error) {
+            console.log(error);
+            setLoading(false)
+        }
+
     }
 
     return (
@@ -82,7 +92,7 @@ const Create = () => {
                 </h2>
             </div>
             <>
-                {!craeteLoading ? (<form className="form" onSubmit={handleSubmit(submitHandler)}>
+                {!loading ? (<form className="form" onSubmit={handleSubmit(submitHandler)}>
                     <div className="form__group">
                         <label className="form__label">Title</label>
                         <input className={`form__input ${errors.title ? 'form__input--danger' : ''}`} type="text" {...register('title', { required: true })} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="write your question here..." />
