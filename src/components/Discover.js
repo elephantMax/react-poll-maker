@@ -42,7 +42,7 @@ const Discover = () => {
                     <h3 className="title">
                         New Polls
                     </h3>
-                    {!pollsLoading ? <PollsList polls={polls} /> : <p className="subtitle">Загрузка test</p>}
+                    {!pollsLoading ? <PollsList polls={polls} /> : <p className="subtitle">Загрузка</p>}
                 </div>
             </div>
         </div>
