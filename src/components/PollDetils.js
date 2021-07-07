@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from 'react';
 import useDateDifference from '../hooks/useDateDifference';
 import Loader from './Loader';
 import { useForm } from 'react-hook-form';
+import { useRef } from 'react';
+import Dropdown from './Dropdown';
 
 const PollDetails = () => {
   const { poll, pollLoading } = useSelector((state) => state.poll)
@@ -16,6 +18,8 @@ const PollDetails = () => {
   const { id } = useParams()
   const history = useHistory()
   const { setError, formState: { errors } } = useForm()
+  const dropdown = useRef()
+  const page = useRef()
 
   const session_id = localStorage.getItem('session_id')
 
@@ -43,7 +47,7 @@ const PollDetails = () => {
   const clickHandler = async () => {
     try {
       const data = await dispatch(removePoll(id))
-      if(data.error) {
+      if (data.error) {
         throw new Error(data.error.message)
       }
       history.push('/discover')
@@ -51,6 +55,19 @@ const PollDetails = () => {
       console.log(error);
     }
   }
+
+  const toggleDropDown = (e) => {
+    e.stopPropagation()
+    dropdown.current.classList.toggle('open')
+  }
+
+  const closeDropDown = () => {
+    dropdown.current.classList.remove('open')
+  }
+
+  const createEmbedded = () => {
+    //create embed
+  } 
 
   const dateDifference = useDateDifference(poll)
 
@@ -80,7 +97,7 @@ const PollDetails = () => {
 
   return (
     <>
-      <div className="page">
+      <div className="page" ref={page} onClick={closeDropDown}>
         {pollLoading && <Loader />}
         {poll && (
           <>
@@ -91,11 +108,7 @@ const PollDetails = () => {
               <p className="subtitle">
                 by {poll.user ? <Link className="link" to={`/profile/${poll.user_id}`}>{poll.user}</Link> : <span className="subtitle">guest</span>} · {dateDifference} days ago
               </p>
-              {canDelete && <span className="page-header__btn">
-                <button className="btn btn-red" onClick={clickHandler}>
-                  Удалить
-                </button>
-              </span>}
+              <Dropdown refName={dropdown} createEmbedded={createEmbedded} toggleDropDown={toggleDropDown} clickHandler={clickHandler} canDelete={canDelete} />
             </div>
 
             <div className="pollDetails__body">
