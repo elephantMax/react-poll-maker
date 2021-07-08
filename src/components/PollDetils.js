@@ -7,6 +7,7 @@ import Loader from './Loader';
 import { useForm } from 'react-hook-form';
 import { useRef } from 'react';
 import Dropdown from './Dropdown';
+import Modal from './Modal';
 
 const PollDetails = () => {
   const { poll, pollLoading } = useSelector((state) => state.poll)
@@ -15,11 +16,35 @@ const PollDetails = () => {
   const [selectedOption, setSelectedOption] = useState()
   const [hasError, setHasError] = useState(false)
   const [voteLoading, setVoteLoading] = useState(false)
+  const [showModal, setShowModal] = useState(true)
   const { id } = useParams()
   const history = useHistory()
   const { setError, formState: { errors } } = useForm()
   const page = useRef()
   const dropdown = useRef()
+
+  const modalData = {
+    header: 'Modal title',
+    content: () => (
+      <>
+        <h2>Content</h2>
+        <textarea></textarea>
+        <p className="subtitle">
+          you
+        </p>
+      </>
+    ),
+    buttons: [
+      {
+        id: 1,
+        text: 'close',
+        classList: ['btn', 'btn-white'],
+        onClick: () => {
+          setShowModal(false)
+        }
+      }
+    ]
+  }
 
   const session_id = localStorage.getItem('session_id')
 
@@ -40,7 +65,7 @@ const PollDetails = () => {
       id: 1,
       text: 'Embed',
       handler: () => {
-        console.log('embed');
+        setShowModal(true)
       }
     }]
     if (canDelete) {
@@ -142,6 +167,8 @@ const PollDetails = () => {
                 </div>
               </form>
             </div>
+
+            <Modal visible={showModal} close={() => setShowModal(false)} data={modalData} />
           </>
         )}
         {!poll && !pollLoading && <p className="subtitle">Пусто</p>}

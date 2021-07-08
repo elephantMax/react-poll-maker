@@ -83,6 +83,11 @@ body {
   color: white;
 }
 
+.btn-white {
+  background-color: #fff;
+  color: black;
+}
+
 .btn-blue {
   background-color: #00b0f4;
   color: white;
@@ -499,6 +504,72 @@ body {
 
 .dropdown.open .dropdown__items {
   display: block;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 15, 16, 0.801);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.open {
+  display: flex;
+}
+
+
+.modal__body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 400px;
+  max-height: 400px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.modal__header, .modal__footer {
+  background-color:#37393f;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
+.modal__header, .modal__footer, .modal__content {
+  padding: 10px;
+}
+
+.modal__header .title {
+  margin: 0;
+}
+
+.modal__content {
+  flex: 10;
+  background-color: #2d2e32; 
+  overflow: auto;
+}
+
+.modal__closer {
+  cursor: pointer;
+  background-color: #b9bbbe;
+  color: #37393f;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.modal__closer strong {
+  font-size: 18px;
+  font-weight: 800;
+  margin: auto;
 }
 
 
