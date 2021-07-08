@@ -18,10 +18,50 @@ const PollDetails = () => {
   const { id } = useParams()
   const history = useHistory()
   const { setError, formState: { errors } } = useForm()
-  const dropdown = useRef()
   const page = useRef()
+  const dropdown = useRef()
 
   const session_id = localStorage.getItem('session_id')
+
+  const canDelete = useMemo(() => {
+    if (!poll) {
+      return false
+    }
+    if (user && user.uid === poll.user_id) {
+      return true
+    } else if (session_id === poll?.session_id) {
+      return true
+    }
+    return false
+  }, [poll, user, session_id])
+
+  const items = useMemo(() => {
+    const list = [{
+      id: 1,
+      text: 'Embed',
+      handler: () => {
+        console.log('embed');
+      }
+    }]
+    if (canDelete) {
+      list.push({
+        id: 2,
+        text: 'Delete',
+        handler: async () => {
+          try {
+            const data = await dispatch(removePoll(id))
+            if (data.error) {
+              throw new Error(data.error.message)
+            }
+            history.push('/discover')
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      })
+    }
+    return list
+  }, [canDelete, dispatch, history, id])
 
   const submitHandler = async (e) => {
     e.preventDefault()
@@ -44,18 +84,6 @@ const PollDetails = () => {
     }
   }
 
-  const clickHandler = async () => {
-    try {
-      const data = await dispatch(removePoll(id))
-      if (data.error) {
-        throw new Error(data.error.message)
-      }
-      history.push('/discover')
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   const toggleDropDown = (e) => {
     e.stopPropagation()
     dropdown.current.classList.toggle('open')
@@ -64,10 +92,6 @@ const PollDetails = () => {
   const closeDropDown = () => {
     dropdown.current.classList.remove('open')
   }
-
-  const createEmbedded = () => {
-    //create embed
-  } 
 
   const dateDifference = useDateDifference(poll)
 
@@ -79,21 +103,6 @@ const PollDetails = () => {
       }
     } else dispatch(fetchPollById(id))
   }, [dispatch, id, poll])
-
-  const canDelete = useMemo(() => {
-    if (!poll) {
-      return false
-    }
-    if (user) {
-      if (user.uid === poll.user_id) {
-        return true
-      }
-      return false
-    } else if (session_id === poll?.session_id) {
-      return true
-    }
-    return false
-  }, [poll, user, session_id])
 
   return (
     <>
@@ -108,7 +117,7 @@ const PollDetails = () => {
               <p className="subtitle">
                 by {poll.user ? <Link className="link" to={`/profile/${poll.user_id}`}>{poll.user}</Link> : <span className="subtitle">guest</span>} · {dateDifference} days ago
               </p>
-              <Dropdown refName={dropdown} createEmbedded={createEmbedded} toggleDropDown={toggleDropDown} clickHandler={clickHandler} canDelete={canDelete} />
+              <Dropdown items={items} name={dropdown} toggleDropDown={toggleDropDown} />
             </div>
 
             <div className="pollDetails__body">
