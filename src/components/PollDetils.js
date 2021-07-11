@@ -7,6 +7,7 @@ import Loader from './Loader';
 import { useForm } from 'react-hook-form';
 import { useRef } from 'react';
 import Dropdown from './Dropdown';
+import Modal from './Modal';
 
 const PollDetails = () => {
   const { poll, pollLoading } = useSelector((state) => state.poll)
@@ -15,11 +16,38 @@ const PollDetails = () => {
   const [selectedOption, setSelectedOption] = useState()
   const [hasError, setHasError] = useState(false)
   const [voteLoading, setVoteLoading] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const { id } = useParams()
   const history = useHistory()
   const { setError, formState: { errors } } = useForm()
   const page = useRef()
   const dropdown = useRef()
+
+  const modalData = {
+    header: 'Embed Poll',
+    content: () => (
+      <>
+        <p className="subtitle">
+          Use the code below to embed this poll on any website.
+        </p>
+        <p className="subtitle">
+          The height and width of the widget were calculated automatically. If necessary, you can change the width and height in the code according to your needs.
+        </p>
+        <textarea className="embed-textarea" readOnly value={`<iframe width="620" height="572" src="http://localhost:3000/embed/${id}" style="width: 100%; height: 572px;" frameborder="0" allowfullscreen></iframe>`}>
+        </textarea>
+      </>
+    ),
+    buttons: [
+      {
+        id: 1,
+        text: 'close',
+        classList: ['btn', 'btn-white'],
+        onClick: () => {
+          setShowModal(false)
+        }
+      }
+    ]
+  }
 
   const session_id = localStorage.getItem('session_id')
 
@@ -40,7 +68,7 @@ const PollDetails = () => {
       id: 1,
       text: 'Embed',
       handler: () => {
-        console.log('embed');
+        setShowModal(true)
       }
     }]
     if (canDelete) {
@@ -142,6 +170,8 @@ const PollDetails = () => {
                 </div>
               </form>
             </div>
+
+            <Modal visible={showModal} close={() => setShowModal(false)} data={modalData} />
           </>
         )}
         {!poll && !pollLoading && <p className="subtitle">Пусто</p>}
