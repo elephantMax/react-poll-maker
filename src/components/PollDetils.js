@@ -16,7 +16,7 @@ const PollDetails = () => {
   const [selectedOption, setSelectedOption] = useState()
   const [hasError, setHasError] = useState(false)
   const [voteLoading, setVoteLoading] = useState(false)
-  const [showModal, setShowModal] = useState(true)
+  const [showModal, setShowModal] = useState(false)
   const { id } = useParams()
   const history = useHistory()
   const { setError, formState: { errors } } = useForm()
@@ -24,14 +24,17 @@ const PollDetails = () => {
   const dropdown = useRef()
 
   const modalData = {
-    header: 'Modal title',
+    header: 'Embed Poll',
     content: () => (
       <>
-        <h2>Content</h2>
-        <textarea></textarea>
         <p className="subtitle">
-          you
+          Use the code below to embed this poll on any website.
         </p>
+        <p className="subtitle">
+          The height and width of the widget were calculated automatically. If necessary, you can change the width and height in the code according to your needs.
+        </p>
+        <textarea className="embed-textarea" readOnly value={`<iframe width="620" height="572" src="http://localhost:3000/embed/${id}" style="width: 100%; height: 572px;" frameborder="0" allowfullscreen></iframe>`}>
+        </textarea>
       </>
     ),
     buttons: [

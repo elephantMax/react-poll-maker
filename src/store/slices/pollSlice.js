@@ -52,7 +52,7 @@ export const removePoll = createAsyncThunk('polls/removePoll', async (id) => {
 export const vote = createAsyncThunk('polls/vote', async ({ poll, optionId }) => {
     try {
         const session_id = localStorage.getItem('session_id')
-
+        
         if (!session_id) {
             throw new Error()
         }
@@ -154,7 +154,9 @@ export const pollSlice = createSlice({
             state.voteLoading = true
         },
         [vote.fulfilled]: (state, action) => {
-            state.polls = state.polls.map(poll => poll.id === action.payload.id ? action.payload : poll)
+            if(state.polls) {
+                state.polls = state.polls.map(poll => poll.id === action.payload.id ? action.payload : poll)
+            }
             state.poll = action.payload
         },
         [createPoll.fulfilled]: (state, action) => {
