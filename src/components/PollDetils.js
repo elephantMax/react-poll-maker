@@ -5,6 +5,9 @@ import { useEffect, useMemo, useState } from 'react';
 import useDateDifference from '../hooks/useDateDifference';
 import Loader from './Loader';
 import { useForm } from 'react-hook-form';
+import { useRef } from 'react';
+import Dropdown from './Dropdown';
+import Modal from './Modal';
 
 const PollDetails = () => {
   const { poll, pollLoading } = useSelector((state) => state.poll)
@@ -13,11 +16,80 @@ const PollDetails = () => {
   const [selectedOption, setSelectedOption] = useState()
   const [hasError, setHasError] = useState(false)
   const [voteLoading, setVoteLoading] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const { id } = useParams()
   const history = useHistory()
   const { setError, formState: { errors } } = useForm()
+  const page = useRef()
+  const dropdown = useRef()
+
+  const modalData = {
+    header: 'Embed Poll',
+    content: () => (
+      <>
+        <p className="subtitle">
+          Use the code below to embed this poll on any website.
+        </p>
+        <p className="subtitle">
+          The height and width of the widget were calculated automatically. If necessary, you can change the width and height in the code according to your needs.
+        </p>
+        <textarea className="embed-textarea" readOnly value={`<iframe width="620" height="572" src="http://localhost:3000/embed/${id}" style="width: 100%; height: 572px;" frameborder="0" allowfullscreen></iframe>`}>
+        </textarea>
+      </>
+    ),
+    buttons: [
+      {
+        id: 1,
+        text: 'close',
+        classList: ['btn', 'btn-white'],
+        onClick: () => {
+          setShowModal(false)
+        }
+      }
+    ]
+  }
 
   const session_id = localStorage.getItem('session_id')
+
+  const canDelete = useMemo(() => {
+    if (!poll) {
+      return false
+    }
+    if (user && user.uid === poll.user_id) {
+      return true
+    } else if (session_id === poll?.session_id) {
+      return true
+    }
+    return false
+  }, [poll, user, session_id])
+
+  const items = useMemo(() => {
+    const list = [{
+      id: 1,
+      text: 'Embed',
+      handler: () => {
+        setShowModal(true)
+      }
+    }]
+    if (canDelete) {
+      list.push({
+        id: 2,
+        text: 'Delete',
+        handler: async () => {
+          try {
+            const data = await dispatch(removePoll(id))
+            if (data.error) {
+              throw new Error(data.error.message)
+            }
+            history.push('/discover')
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      })
+    }
+    return list
+  }, [canDelete, dispatch, history, id])
 
   const submitHandler = async (e) => {
     e.preventDefault()
@@ -40,16 +112,13 @@ const PollDetails = () => {
     }
   }
 
-  const clickHandler = async () => {
-    try {
-      const data = await dispatch(removePoll(id))
-      if(data.error) {
-        throw new Error(data.error.message)
-      }
-      history.push('/discover')
-    } catch (error) {
-      console.log(error);
-    }
+  const toggleDropDown = (e) => {
+    e.stopPropagation()
+    dropdown.current.classList.toggle('open')
+  }
+
+  const closeDropDown = () => {
+    dropdown.current.classList.remove('open')
   }
 
   const dateDifference = useDateDifference(poll)
@@ -63,24 +132,9 @@ const PollDetails = () => {
     } else dispatch(fetchPollById(id))
   }, [dispatch, id, poll])
 
-  const canDelete = useMemo(() => {
-    if (!poll) {
-      return false
-    }
-    if (user) {
-      if (user.uid === poll.user_id) {
-        return true
-      }
-      return false
-    } else if (session_id === poll?.session_id) {
-      return true
-    }
-    return false
-  }, [poll, user, session_id])
-
   return (
     <>
-      <div className="page">
+      <div className="page" ref={page} onClick={closeDropDown}>
         {pollLoading && <Loader />}
         {poll && (
           <>
@@ -91,11 +145,7 @@ const PollDetails = () => {
               <p className="subtitle">
                 by {poll.user ? <Link className="link" to={`/profile/${poll.user_id}`}>{poll.user}</Link> : <span className="subtitle">guest</span>} · {dateDifference} days ago
               </p>
-              {canDelete && <span className="page-header__btn">
-                <button className="btn btn-red" onClick={clickHandler}>
-                  Удалить
-                </button>
-              </span>}
+              <Dropdown items={items} name={dropdown} toggleDropDown={toggleDropDown} />
             </div>
 
             <div className="pollDetails__body">
@@ -120,6 +170,8 @@ const PollDetails = () => {
                 </div>
               </form>
             </div>
+
+            <Modal visible={showModal} close={() => setShowModal(false)} data={modalData} />
           </>
         )}
         {!poll && !pollLoading && <p className="subtitle">Пусто</p>}
