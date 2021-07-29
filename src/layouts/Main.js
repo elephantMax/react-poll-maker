@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "../store/slices/userSlice";
 import { fetchPolls } from "../store/slices/pollSlice";
 import Loader from "../components/Loader";
-import { Link, Route, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Create from "../components/Create";
 import Discover from "../components/Discover";

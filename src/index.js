@@ -8,16 +8,17 @@ import store from './store'
 import { Provider } from 'react-redux'
 import 'firebase/auth'
 import 'firebase/database'
+require('dotenv').config()
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAFqP1uB0mBL5jjv8f2fJBbxLsdOgXju_k",
-  authDomain: "poll-maker-585a7.firebaseapp.com",
-  databaseURL: "https://poll-maker-585a7-default-rtdb.firebaseio.com",
-  projectId: "poll-maker-585a7",
-  storageBucket: "poll-maker-585a7.appspot.com",
-  messagingSenderId: "1089980979398",
-  appId: "1:1089980979398:web:5dfdbe1849d31d5cca5fc7"
+  apiKey: process.env.REACT_APP_apiKey,
+  authDomain: process.env.REACT_APP_authDomain,
+  databaseURL: process.env.REACT_APP_databaseURL,
+  projectId: process.env.REACT_APP_projectId,
+  storageBucket: process.env.REACT_APP_storageBucket,
+  messagingSenderId: process.env.REACT_APP_messagingSenderId,
+  appId: process.env.DB_appId
 };
 
 firebase.initializeApp(firebaseConfig)
